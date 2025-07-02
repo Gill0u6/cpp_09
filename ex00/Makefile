@@ -2,7 +2,7 @@ CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
 NAME = btc
 SRC =	main.cpp\
-		src/BitcoinExchanger.cpp
+		src/BitcoinExchange.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
