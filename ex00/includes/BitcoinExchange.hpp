@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:13:06 by agilles           #+#    #+#             */
-/*   Updated: 2025/07/02 17:45:49 by agilles          ###   ########.fr       */
+/*   Updated: 2025/07/02 18:22:14 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <map>
 #include <string>
 #include <iostream>
+
+#include <sstream>
+#include <fstream>
 
 class BitcoinExchange
 {
@@ -31,6 +34,8 @@ class BitcoinExchange
 
 		BitcoinExchange &operator=(const BitcoinExchange &cp);
 
-		void	setData(std::string csv, std::string input);
+		void	setData();
+		void	setInput(std::string input);
+
 		void	printOutput();
 };
