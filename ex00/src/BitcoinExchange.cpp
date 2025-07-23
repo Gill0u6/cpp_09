@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 17:29:08 by agilles           #+#    #+#             */
-/*   Updated: 2025/07/17 17:24:23 by agilles          ###   ########.fr       */
+/*   Updated: 2025/07/23 15:57:25 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,10 @@ BitcoinExchange::BitcoinExchange(std::string input)
 	this->convertInput(input);
 
 	std::cout << std::endl;
-	// for (std::map<std::string, float>::iterator it = this->_data.begin(); it != this->_data.end(); ++it)
-	// {
-	// 	std::cout << it->first << " => " << it->second << " = " << std::endl;
-	// }
 }
 
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &cp)
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &cp): _data(cp._data)
 {
-	(void)cp;
 	std::cout << "bitcoinExchange Copy constructor called" << std::endl;
 }
 
@@ -52,8 +47,10 @@ BitcoinExchange::~BitcoinExchange()
 
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &cp)
 {
-	(void)cp;
 	std::cout << "bitcoinExchange Assignation operator called" << std::endl;
+	if (this != &cp)
+		return (*this);
+	this->_data = cp._data;
 	return (*this);
 }
 
