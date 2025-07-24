@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 16:08:33 by agilles           #+#    #+#             */
-/*   Updated: 2025/07/23 17:20:09 by agilles          ###   ########.fr       */
+/*   Updated: 2025/07/24 16:44:29 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,6 @@ void	Rpn::div()
 	this->_nb--;
 	if (a == 0)
 	{
-		std::cout << "b" << b << std::endl;
 		std::cerr << "Error: Cannot div by 0" << std::endl;
 		this->_handle_error = 1;
 		return ;
