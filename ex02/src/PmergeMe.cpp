@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 17:06:25 by agilles           #+#    #+#             */
-/*   Updated: 2025/07/31 18:18:29 by agilles          ###   ########.fr       */
+/*   Updated: 2025/08/19 17:34:42 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,32 @@ PmergeMe::PmergeMe(): _handle_error(0)
 	std::cout << "PmergeMe Default constructor called" << std::endl;
 }
 
-PmergeMe::PmergeMe(std::string input): _handle_error(0)
+PmergeMe::PmergeMe(char** input, int ac): _handle_error(0)
 {
 		std::cout << "PmergeMe Arg constructor called" << std::endl;
-		parse(input);
+		parse(input, ac);
 		if (this->_handle_error == 1)
 			return ;
+
+		std::cout << "Before:\t";
+		for (std::vector<int>::iterator it = this->_vec.begin(); it != this->_vec.end(); it++)
+			std::cout << *it << " ";
+		std::cout << std::endl;
+
+		_vec = mergeSort(_vec);
+		_lst = mergeSort(_lst);
+
+		std::cout << "After:\t";
+		for (std::vector<int>::iterator it = this->_vec.begin(); it != this->_vec.end(); it++)
+			std::cout << *it << " ";
+		std::cout << std::endl;
+
+
+		// for (std::vector<int>::iterator it = _vec.begin(); it != _vec.end(); it++)
+		// std::cout << "   _vec: " << *it << std::endl;
+
+		// for (std::list<int>::iterator it = _lst.begin(); it != _lst.end(); it++)
+		// std::cout << "\t_lst: " << *it << std::endl;
 }
 
 PmergeMe::PmergeMe(const PmergeMe &cp): _vec(cp._vec), _lst(cp._lst), _handle_error(0)
@@ -53,51 +73,80 @@ bool	PmergeMe::safe_atoi(std::string nb)
 
 	if (result > INT_MAX || result < INT_MIN || *end != '\0')
 		return false;
-	//std::cout << "res: " << static_cast<int>(result) << std::endl;
 	this->_lst.push_back(static_cast<int>(result));
 	this->_vec.push_back(static_cast<int>(result));
 	return true;
 }
 
-void	PmergeMe::parse(std::string input)
+void	PmergeMe::parse(char** input, int ac)
 {
 	std::string tmp;
-	if (input[0] < '0' && input[0] > '9')
-		{
-			std::cerr << "Invalid Input:\nNot a Number here: " << input[0] << std::endl;
-			return ;
-		}
-	for (int i = 0; input[i]; i++)
+	for (int j = 1; j < ac; j++)
 	{
-		tmp = "";
-		while (input[i] >= '0' && input[i] <= '9')
+		if ((input[j][0] < '0' || input[j][0] > '9') && input[j][0] != '-')
 		{
-			tmp += input[i];
-			i++;
-		}
-		if (input[i] != ' ' && input[i] != '\0')
-		{
-			std::cerr << "Invalid Input:\nNot a WhiteSpace here: " << input[i] << std::endl;
-			this->_handle_error = 1;
+			std::cerr << "Invalid Input:\n1Not a Number here: " << input[0] << std::endl;
 			return ;
 		}
-		if (!safe_atoi(tmp))
+		for (size_t i = 0; i < strlen(input[j]); i++)
 		{
-			this->_handle_error = 1;
-			std::cout << "Invalid Input: all number need to be in range [INT_MAX, INT_MIN]" << std::endl;
-			return ;
+			tmp = "";
+			while (input[j][i] >= '0' && input[j][i] <= '9')
+			{
+				tmp += input[j][i];
+				i++;
+			}
+			if (input[j][i] != '\0')
+			{
+				std::cerr << "Invalid Input:\n2Not a Number here: " << input[j][i] << std::endl;
+				this->_handle_error = 1;
+				return ;
+			}
+			if (!safe_atoi(tmp))
+			{
+				this->_handle_error = 1;
+				std::cout << "Invalid Input: all number need to be in range [INT_MAX, INT_MIN]" << std::endl;
+				return ;
+			}
 		}
-		//std::cout << tmp << std::endl;
 	}
-	for (std::list<int>::iterator it = this->_lst.begin(); it != this->_lst.end(); it++)
-		std::cout << "lst: " << *it << std::endl;
 }
 
-void	PmergeMe::mergeSort(std::vector<int> array)
+ template<typename Container>
+Container	PmergeMe::mergeSort(const Container& cont)
 {
-	long len = array.size();
-	if (len <= 1)
-		return ;
-	std::vector<int>	left;
-	std::vector<int>	right;
+	if (cont.size() <= 1)
+		return cont;
+
+	typename Container::const_iterator midIt = cont.begin();
+	std::advance(midIt, cont.size() / 2);
+	Container	left(cont.begin(), midIt);
+	Container	right(midIt, cont.end());
+
+	for (typename Container::iterator it = left.begin(); it != left.end(); it++)
+	for (typename Container::iterator it = right.begin(); it != right.end(); it++)
+
+	left = mergeSort(left);
+	right = mergeSort(right);
+
+	return (sort(left, right));
 }
+ template <typename Container>
+Container	PmergeMe::sort(const Container& left, const Container& right)
+{
+	Container result;
+	typename Container::const_iterator l = left.begin();
+	typename Container::const_iterator r = right.begin();
+
+	while (l != left.end() && r != right.end())
+	{
+		if (*l < *r)
+			result.push_back(*l++);
+		else
+			result.push_back(*r++);
+	}
+	while (l != left.end())  result.push_back(*l++);
+	while (r != right.end()) result.push_back(*r++);
+	return(result);
+}
+

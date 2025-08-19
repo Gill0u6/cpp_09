@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 17:06:18 by agilles           #+#    #+#             */
-/*   Updated: 2025/07/31 18:15:43 by agilles          ###   ########.fr       */
+/*   Updated: 2025/08/19 17:34:09 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <climits>
+#include <cstring>
 
 #include <vector>
 #include <list>
@@ -29,7 +30,7 @@ class PmergeMe
 
 	public:
 		PmergeMe();
-		PmergeMe(std::string input);
+		PmergeMe(char** input, int ac);
 		PmergeMe(const PmergeMe &cp);
 
 		~PmergeMe();
@@ -37,7 +38,10 @@ class PmergeMe
 		PmergeMe		&operator=(const PmergeMe &cp);
 
 		bool	safe_atoi(std::string nb);
-		void	parse(std::string input);
+		void	parse(char** input, int ac);
 
-		void	PmergeMe::mergeSort(std::vector<int> array)
+		 template<typename Container>
+		Container	mergeSort(const Container& cont);
+		 template <typename Container>
+		Container	sort(const Container& left, const Container& right);
 };
