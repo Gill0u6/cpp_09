@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 17:06:18 by agilles           #+#    #+#             */
-/*   Updated: 2025/08/19 17:34:09 by agilles          ###   ########.fr       */
+/*   Updated: 2025/08/21 16:15:17 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 
 #include <vector>
 #include <list>
+
+#include <ctime>
+#include <iomanip>
 
 class PmergeMe
 {
@@ -44,4 +47,11 @@ class PmergeMe
 		Container	mergeSort(const Container& cont);
 		 template <typename Container>
 		Container	sort(const Container& left, const Container& right);
+
+		std::list<int> mergeList(std::list<int>& left, std::list<int>& right);
+		std::list<int> mergeSortList(std::list<int>& cont);
+
+		std::vector<int> mergeVector(const std::vector<int>& left, const std::vector<int>& right);
+		std::vector<int> mergeSortVector(const std::vector<int>& cont);
+
 };

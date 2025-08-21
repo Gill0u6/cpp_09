@@ -6,7 +6,7 @@
 /*   By: agilles <agilles@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 17:06:25 by agilles           #+#    #+#             */
-/*   Updated: 2025/08/19 17:34:42 by agilles          ###   ########.fr       */
+/*   Updated: 2025/08/21 16:27:14 by agilles          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 PmergeMe::PmergeMe(): _handle_error(0)
 {
-	std::cout << "PmergeMe Default constructor called" << std::endl;
+
 }
 
 PmergeMe::PmergeMe(char** input, int ac): _handle_error(0)
@@ -29,36 +29,39 @@ PmergeMe::PmergeMe(char** input, int ac): _handle_error(0)
 			std::cout << *it << " ";
 		std::cout << std::endl;
 
-		_vec = mergeSort(_vec);
-		_lst = mergeSort(_lst);
-
+		clock_t start = clock();
+		_vec = mergeSortVector(_vec);
+		clock_t end = clock();
 		std::cout << "After:\t";
 		for (std::vector<int>::iterator it = this->_vec.begin(); it != this->_vec.end(); it++)
 			std::cout << *it << " ";
 		std::cout << std::endl;
+		double duration = (double)(end - start) / CLOCKS_PER_SEC;
+		std::cout	<< "Time to process a range of " << _vec.size()
+					<< " elements with std::vector : "
+					<< std::fixed << std::setprecision(6) << duration << " us" << std::endl;
 
+		start = clock();
+		_lst = mergeSortList(_lst);
+		end = clock();
 
-		// for (std::vector<int>::iterator it = _vec.begin(); it != _vec.end(); it++)
-		// std::cout << "   _vec: " << *it << std::endl;
-
-		// for (std::list<int>::iterator it = _lst.begin(); it != _lst.end(); it++)
-		// std::cout << "\t_lst: " << *it << std::endl;
+		duration = (double)(end - start) / CLOCKS_PER_SEC;
+		std::cout	<< "Time to process a range of " << _lst.size()
+					<< " elements with std::list : "
+					<< std::fixed << std::setprecision(6) << duration << " us" << std::endl;
 }
 
 PmergeMe::PmergeMe(const PmergeMe &cp): _vec(cp._vec), _lst(cp._lst), _handle_error(0)
 {
-		std::cout << "PmergeMe Copy constructor called" << std::endl;
 		*this = cp;
 }
 
 PmergeMe::~PmergeMe()
 {
-	std::cout << "PmergeMe Deconstructor called" << std::endl;
 }
 
 PmergeMe &PmergeMe::operator=(const PmergeMe &cp)
 {
-	std::cout << "PmergeMe Assignation operator called" << std::endl;
 	if (this != &cp)
 		return (*this);
 	this->_vec = cp._vec;
@@ -83,9 +86,9 @@ void	PmergeMe::parse(char** input, int ac)
 	std::string tmp;
 	for (int j = 1; j < ac; j++)
 	{
-		if ((input[j][0] < '0' || input[j][0] > '9') && input[j][0] != '-')
+		if ((input[j][0] < '0' || input[j][0] > '9'))
 		{
-			std::cerr << "Invalid Input:\n1Not a Number here: " << input[0] << std::endl;
+			std::cerr << "Invalid Input:\nNot a Number here: " << input[0] << std::endl;
 			return ;
 		}
 		for (size_t i = 0; i < strlen(input[j]); i++)
@@ -98,7 +101,7 @@ void	PmergeMe::parse(char** input, int ac)
 			}
 			if (input[j][i] != '\0')
 			{
-				std::cerr << "Invalid Input:\n2Not a Number here: " << input[j][i] << std::endl;
+				std::cerr << "Invalid Input:\nNot a Number here: " << input[j][i] << std::endl;
 				this->_handle_error = 1;
 				return ;
 			}
@@ -111,7 +114,7 @@ void	PmergeMe::parse(char** input, int ac)
 		}
 	}
 }
-
+/*====Slow Version But Working Version====*/
  template<typename Container>
 Container	PmergeMe::mergeSort(const Container& cont)
 {
@@ -149,4 +152,92 @@ Container	PmergeMe::sort(const Container& left, const Container& right)
 	while (r != right.end()) result.push_back(*r++);
 	return(result);
 }
+
+/*=========================================*/
+		//			VECTOR			//
+
+std::vector<int> PmergeMe::mergeVector(const std::vector<int>& left, const std::vector<int>& right)
+{
+	std::vector<int> result;
+	result.reserve(left.size() + right.size());
+
+	size_t l = 0, r = 0;
+	while (l < left.size() && r < right.size())
+	{
+		if (left[l] <= right[r])
+			result.push_back(left[l++]);
+		else
+			result.push_back(right[r++]);
+	}
+
+	while (l < left.size()) result.push_back(left[l++]);
+	while (r < right.size()) result.push_back(right[r++]);
+
+	return result;
+}
+
+std::vector<int> PmergeMe::mergeSortVector(const std::vector<int>& cont)
+{
+	if (cont.size() <= 1)
+		return cont;
+
+	size_t mid = cont.size() / 2;
+	std::vector<int> left(cont.begin(), cont.begin() + mid);
+	std::vector<int> right(cont.begin() + mid, cont.end());
+
+	left = mergeSortVector(left);
+	right = mergeSortVector(right);
+
+	return mergeVector(left, right);
+}
+
+/*=========================================*/
+		//			LIST			//
+
+std::list<int> PmergeMe::mergeList(std::list<int>& left, std::list<int>& right)
+{
+	std::list<int> result;
+
+	while (!left.empty() && !right.empty())
+	{
+		if (left.front() <= right.front())
+		{
+			result.push_back(left.front());
+			left.pop_front();
+		}
+		else
+		{
+			result.push_back(right.front());
+			right.pop_front();
+		}
+	}
+
+	if (!left.empty())
+		result.splice(result.end(), left);
+	if (!right.empty())
+		result.splice(result.end(), right);
+
+	return (result);
+}
+
+std::list<int> PmergeMe::mergeSortList(std::list<int>& cont)
+{
+	if (cont.size() <= 1)
+		return cont;
+
+	std::list<int> right;
+	std::list<int> left;
+
+	std::list<int>::iterator midIt = cont.begin();
+	std::advance(midIt, cont.size() / 2);
+
+	left.splice(left.begin(), cont, cont.begin(), midIt);
+	right.splice(right.begin(), cont, cont.begin(), cont.end());
+
+	left = mergeSortList(left);
+	right = mergeSortList(right);
+
+	return (mergeList(left, right));
+}
+
 
